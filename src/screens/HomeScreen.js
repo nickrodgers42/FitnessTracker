@@ -164,7 +164,7 @@ export default class HomeScreen extends Component {
                                 }
                             </Col>
                             <Col>
-                                <Button rounded>
+                                <Button rounded onPress={() => {this.props.navigation.push('ActivitySelectScreen')}}>
                                     <Text>Start New Activity</Text>
                                 </Button>
                             </Col>

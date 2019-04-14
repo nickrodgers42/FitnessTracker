@@ -8,6 +8,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import HomeScreen from '../screens/HomeScreen';
+import ActivitySelectScreen from '../screens/ActivitySelectScreen';
 
 let NavigationService = class NavigationService {
     constructor() {
@@ -42,6 +43,7 @@ let NavigationService = class NavigationService {
 const TabTwo = createStackNavigator(
     {
         Home: HomeScreen,
+        ActivitySelectScreen: ActivitySelectScreen,
     }
 )
 
