@@ -21,6 +21,7 @@ import {
 import getTheme from '../native-base-theme/components';
 import theme from '../native-base-theme/variables/material';
 
+import store from './redux/ReduxStore';
 import {
 	Provider
 } from 'react-redux';
@@ -28,11 +29,13 @@ import {
 export default class App extends Component {
 	render() {
 		return (
-			<StyleProvider style={getTheme(theme)}>
-				<Root>
-					{navigationService.getTopNavigator()}
-				</Root>
-			</StyleProvider>
+			<Provider store={store}>
+				<StyleProvider style={getTheme(theme)}>
+					<Root>
+						{navigationService.getTopNavigator()}
+					</Root>
+				</StyleProvider>
+			</Provider>
 		);
 	}
 }

@@ -42,16 +42,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import weatherService from '../services/weather.service';
 
-let activityList = [
-    ['Walking', 'directions-walk'],
-    ['Running', 'directions-run'],
-    ['Cycling', 'directions-bike'],
-    ['Hiking', 'terrain'],
-    ['Skiing', 'ac-unit'],
-    ['Weights', 'fitness-center'],
-    ['Golfing', 'golf-course'],
-    ['Swimming', 'pool'],
-]
+import activityList from '../models/activityList';
 
 export default class ActivitySelectScreen extends Component {
     static navigationOptions = {
