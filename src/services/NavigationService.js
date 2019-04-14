@@ -63,12 +63,12 @@ const Root = createBottomTabNavigator(
                 if (routeName === 'Games') {
                     iconName = 'videogame-asset';
                 } else if (routeName === 'Home') {
-                    iconName = 'home';
+                    iconName = 'directions-run';
                 } else if (routeName === 'Favorites') {
                     iconName = 'star'
                 }
 
-                return <IconComponent name={iconName} size={25} color={tintColor} />;
+                return <IconComponent name={iconName} size={30} color={tintColor} />;
             },
         }),
         tabBarOptions: {
