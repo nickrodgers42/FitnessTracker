@@ -49,7 +49,7 @@ export default class HomeScreen extends Component {
         this.state = {
             region: null,
             currentLocation: null,
-            weather: null
+            weather: null,
         }
     }    
 
@@ -119,7 +119,21 @@ export default class HomeScreen extends Component {
     onRegionChange(region) {
         //update state, but doesn't modify map because we use initalRegion
         //if we use region prop it creates a weird update cycle
+        // console.log('region changed');
         this.setState({ region });
+    }
+
+    setRegionToCurrentLocation() {
+        this.setState((prevState, props) => {
+            return {
+                region: {
+                    latitude: prevState.currentLocation.latitude,
+                    longitude: prevState.currentLocation.longitude,
+                    latitudeDelta: 0.00922,
+                    longitudeDelta: 0.00421,
+                }
+            }
+        })
     }
 
     render() {
@@ -133,22 +147,18 @@ export default class HomeScreen extends Component {
                                     <Spinner style={{...StyleSheet.absoluteFillObject}} color='green' />
                                 </Col>
                             : 
+                                <Col style={{...StyleSheet.absoluteFillObject}}>
                                 <MapView
-                                initialRegion={this.state.region}
-                                style={{...StyleSheet.absoluteFillObject}}
-                                onRegionChange={(region) => this.onRegionChange(region)}
-                                provider={PROVIDER_GOOGLE}
+                                    initialRegion={this.state.region}
+                                    style={{...StyleSheet.absoluteFillObject}}
+                                    onRegionChange={(region) => this.onRegionChange(region)}
+                                    provider={PROVIDER_GOOGLE}
+                                    showsUserLocation={true}
+                                    region={this.state.region}
                                 >
-                                    <Marker
-                                        coordinate={ this.state.currentLocation }
-                                        >
-                                        <Callout>
-                                            <View>
-                                                <Text>Your Location</Text>
-                                            </View>
-                                        </Callout>
-                                    </Marker>
                                 </MapView>
+                                <Button onPress={() => {this.setRegionToCurrentLocation()}} style={{position: 'absolute'}}><Text>Center</Text></Button>
+                                </Col>
                             }
                         </Row> 
                         <Row size={1} style={{justifyContent: 'center', alignItems: 'center'}}>
