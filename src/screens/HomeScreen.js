@@ -105,17 +105,7 @@ export default class HomeScreen extends Component {
         this.willFocusListener.remove();
     }
 
-    // _getLocationAsync = async () => {
-    //     let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    //     if (status !== 'granted') {
-    //         this.setState({
-    //             locationResult: 'Permission to access location was denied',
-    //         });
-    //     }
 
-    //     let location = await Location.getCurrentPositionAsync({});
-    //     this.setState({ region: JSON.stringify(location) });
-    // };
     onRegionChange(region) {
         //update state, but doesn't modify map because we use initalRegion
         //if we use region prop it creates a weird update cycle
@@ -123,18 +113,6 @@ export default class HomeScreen extends Component {
         this.setState({ region });
     }
 
-    setRegionToCurrentLocation() {
-        this.setState((prevState, props) => {
-            return {
-                region: {
-                    latitude: prevState.currentLocation.latitude,
-                    longitude: prevState.currentLocation.longitude,
-                    latitudeDelta: 0.00922,
-                    longitudeDelta: 0.00421,
-                }
-            }
-        })
-    }
 
     render() {
         let dim = Dimensions.get('window');
@@ -148,22 +126,23 @@ export default class HomeScreen extends Component {
                                 </Col>
                             : 
                                 <Col style={{...StyleSheet.absoluteFillObject}}>
-                                <MapView
-                                    initialRegion={this.state.region}
-                                    style={{...StyleSheet.absoluteFillObject}}
-                                    onRegionChange={(region) => this.onRegionChange(region)}
-                                    provider={PROVIDER_GOOGLE}
-                                    showsUserLocation={true}
-                                    region={this.state.region}
-                                >
-                                </MapView>
-                                <Button onPress={() => {this.setRegionToCurrentLocation()}} style={{position: 'absolute'}}><Text>Center</Text></Button>
+                                    <MapView
+                                        initialRegion={this.state.region}
+                                        style={{...StyleSheet.absoluteFillObject}}
+                                        onRegionChange={(region) => this.onRegionChange(region)}
+                                        provider={PROVIDER_GOOGLE}
+                                        showsUserLocation={true}
+                                        showsMyLocationButton
+                                        showsCompass
+                                    >
+                                    </MapView>
                                 </Col>
                             }
                         </Row> 
                         <Row size={1} style={{justifyContent: 'center', alignItems: 'center'}}>
                             <Col>
-                                {this.state.weather == null ? null
+                                {this.state.weather == null ?
+                                    <Spinner style={{ ...StyleSheet.absoluteFillObject }} color='green' />
                                 :
                                     <Body>
                                         <Thumbnail square source={{ uri: 'http://openweathermap.org/img/w/' + this.state.weather.icon + '.png' }} />

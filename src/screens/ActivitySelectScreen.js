@@ -95,7 +95,7 @@ export default class ActivitySelectScreen extends Component {
                                     <Text>Start</Text>
                                 </Button>    
                             :
-                                <Button success>
+                                <Button success onPress={() => {this.props.navigation.push('ActivityScreen', {activity: this.state.selected})}}>
                                     <Text>Start</Text>
                                 </Button>
                             }
