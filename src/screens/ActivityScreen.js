@@ -65,9 +65,8 @@ class ActivityScreen extends Component {
                                     'Exit without saving',
                                     'You have an activity in progress. Would you like to stop and save your activity before you leave?',
                                     [
-                                        { text: 'Cancel', onPress: () => {} },
                                         { text: 'Leave', onPress: () => { navigation.goBack()} },
-                                        { text: 'Save Activity', onPress: () => { } }
+                                        { text: 'Return to activity', onPress: () => { } }
                                     ]
                                 )
                             }} >
@@ -112,12 +111,8 @@ class ActivityScreen extends Component {
         );
         this.locationWatcher = navigator.geolocation.watchPosition(
             (position) => {
-                console.log('position');
-                console.log(this.state.path);
-                console.log(this.state.path.length);
                 if (this.state.path.length > 0 && !this.state.paused) {
                     this.setState((prevState, props) => {
-                        console.log(prevState);
                         let dist = prevState.distance;
                         let lastLat = prevState.path[prevState.path.length - 1].latitude;
                         let lastLong = prevState.path[prevState.path.length - 1].longitude;
@@ -177,6 +172,7 @@ class ActivityScreen extends Component {
             this.state.startWeather
         );
         this.props.dispatchNewTempActivity(activity);
+        this.props.navigation.push('AfterActivityScreen', {activity: this.props.navigation.getParam('activity')});
     }
 
     render() {

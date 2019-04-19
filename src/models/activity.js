@@ -8,5 +8,6 @@ export default class Activity {
         this.endWeather = null;
         this.mood = null;
         this.photo = null;
+        this.date = null;
     }
 }

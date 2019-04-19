@@ -38,6 +38,8 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import weatherService from '../services/weather.service';
 
+import WeatherCompoent from '../models/weatherComponent';
+
 export default class HomeScreen extends Component {
     static navigationOptions = {
         title: 'Home Screen'
@@ -144,12 +146,7 @@ export default class HomeScreen extends Component {
                                 {this.state.weather == null ?
                                     <Spinner style={{ ...StyleSheet.absoluteFillObject }} color='green' />
                                 :
-                                    <Body>
-                                        <Thumbnail square source={{ uri: 'http://openweathermap.org/img/w/' + this.state.weather.icon + '.png' }} />
-                                        <Text>{this.state.weather.temp + ' \u2103'}</Text>
-                                        <Text note style={{textAlign: 'center'}}>{this.state.weather.description}</Text>
-                                        <Text note>{this.state.weather.clouds}% Cloudy</Text>
-                                    </Body>
+                                    <WeatherCompoent weather={this.state.weather} />
                                 }
                             </Col>
                             <Col>
