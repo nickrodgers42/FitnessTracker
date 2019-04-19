@@ -71,7 +71,7 @@ export default class HomeScreen extends Component {
                 .catch((error) => { console.error (error); });
         },
         (error) => {console.error(error);},
-        { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
+        { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         );
         this.locationWatcher = navigator.geolocation.watchPosition(
             (position) => {
@@ -83,7 +83,7 @@ export default class HomeScreen extends Component {
                 })
             },
             (error) => { console.error(error); },
-            { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }            
+            { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }            
         )
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',

@@ -1,7 +1,11 @@
-import { SAVEACTIVITY } from '../actions/constants';
+import { 
+    SAVEACTIVITY,
+    NEWTEMPACTIVITY
+} from '../actions/constants';
 
 let initialState = {
-    activities: []
+    activities: [],
+    tempActivity: null
 };
 
 export default function(state = initialState, action) {
@@ -9,7 +13,9 @@ export default function(state = initialState, action) {
         case SAVEACTIVITY:
             let temp = state.activities;
             temp.push(action.item)
-            return {activities: temp}
+            return {...state, activities: temp}
+        case NEWTEMPACTIVITY:
+            return {...state, tempActivity: action.item}
         default:
             return state;
     }
