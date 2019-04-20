@@ -23,7 +23,7 @@ export function coordDistance(lat1, long1, lat2, long2) {
 }
 
 export function toKmph(seconds, distance) {
-    if (seconds == 0 || distance == 0) {
+    if (seconds == 0 || distance == 0 || (distance * 3600) / seconds == NaN) {
         return 0;
     }
     return (distance * 3600) / seconds;

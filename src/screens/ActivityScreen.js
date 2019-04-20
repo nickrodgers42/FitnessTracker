@@ -119,12 +119,9 @@ class ActivityScreen extends Component {
                         let newLat = position.coords.latitude;
                         let newLong = position.coords.longitude;
                         let addDist = coordDistance(lastLat, lastLong, newLat, newLong);
-                        prevState.path.push({
-                            latitude: newLat,
-                            longitude: newLong
-                        })
+                        let newPath = prevState.path.concat({latitude: newLat, longitude: newLong});
                         return {
-                            path: prevState.path,
+                            path: newPath,
                             distance: dist + addDist
                         }
                     })
@@ -132,6 +129,18 @@ class ActivityScreen extends Component {
             },
             (error) => { console.error(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }
+        )
+        this.willFocusListener = this.props.navigation.addListener(
+            'willFocus',
+            data => {
+                this.startTimer();
+            }
+        )
+        this.willBlurListener = this.props.navigation.addListener(
+            'willBlur',
+            data => {
+                this.stopTimer();
+            }
         )
     }
 
@@ -152,7 +161,11 @@ class ActivityScreen extends Component {
     }
 
     componentWillUnmount() {
+        console.log('unmount');
         this.stopTimer();
+        this.willBlurListener.remove();
+        this.willFocusListener.remove();
+        navigator.geolocation.clearWatch(this.locationWatcher);
     }
 
     togglePaused() {

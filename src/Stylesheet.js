@@ -7,8 +7,7 @@ export default StyleSheet.create({
     titleText: {
         fontSize: 24,
         fontWeight: 'bold',
-        paddingRight: 20,
-        paddingTop: 20,
+        paddingLeft: 20,
     },
     bigText: {
         fontSize: 40, 
@@ -17,5 +16,9 @@ export default StyleSheet.create({
     centerItems: {
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    grow: {
+        flexGrow: 1,
+        flex: 1,
     }
 });

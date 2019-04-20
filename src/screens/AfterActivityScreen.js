@@ -36,7 +36,7 @@ import {
 import navigationService from '../services/NavigationService';
 import { connect } from "react-redux";
 
-import MapView, { PROVIDER_GOOGLE, Callout, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Callout, Marker, Polyline } from 'react-native-maps';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -83,6 +83,7 @@ class AfterActivityScreen extends Component {
         super(props);
         this.state = {
             endWeather: null,
+            activityPath: this.props.tempActivity.path
         }
     }
 
@@ -99,53 +100,113 @@ class AfterActivityScreen extends Component {
         );
     }
 
+    getInitialRegion() {
+        let path = this.props.tempActivity.path;
+        return {
+            latitude: path[path.length - 1].latitude,
+            longitude: path[path.length - 1].longitude,
+            latitudeDelta: 0.00922,
+            longitudeDelta: 0.00421,
+        }
+    }
+
+    onRegionChange(region) {
+        this.setState({region});
+    }
+
     render() {
         let dim = Dimensions.get('window');
         return (
             <Container>
                 <Content
-                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 1.5, justifyContent: 'space-between' }}
+                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 2, justifyContent: 'space-between' }}
                 >
                     <Grid>
-                        <Row>
+                        <Row size={2}>
                            <Col style={{...StyleSheet.absoluteFillObject}} >
-                                <MapView
-                                    
-                                ></MapView>
-                           </Col> 
+                                {this.props.tempActivity.path == null ? 
+                                    <Spinner style={{ ...StyleSheet.absoluteFillObject }} color='green' />
+                                :
+                                    <MapView
+                                        initialRegion={this.getInitialRegion()}
+                                        style={{...StyleSheet.absoluteFillObject}}
+                                        onRegionChange={(region) => {this.onRegionChange(region)}}
+                                        provider={PROVIDER_GOOGLE}
+                                        showsUserLocation={true}
+                                        showsMyLocationButton
+                                        showsCompass={true}
+                                    >
+                                        <Polyline 
+                                            coordinates={this.props.tempActivity.path}
+                                            strokeColor="#000"
+                                            strokeWidth={4}
+                                        />
+                                    </MapView>
+                                }
+                            </Col> 
                         </Row>
                         <Row>
-                            <Grid>
-                                <Row size={1}>
-                                    <Text style={Styles.titleText}>Duration</Text>
-                                </Row>
-                                <Row size={3} style={Styles.centerItems}>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>Duration</Text>
+                                    </Body>
+                                </CardItem>
+                                <CardItem style={Styles.centerItems}>
                                     <Text style={Styles.bigText}>{formatSeconds(this.props.tempActivity.seconds)}</Text>
-                                </Row>
-                            </Grid>
+                                </CardItem>
+                            </Card>
                         </Row>
                         <Row>
-                            <Grid>
-                                <Row size={1}>
-                                    <Text style={Styles.titleText}>Weather Begin/End</Text>
-                                </Row>
-                                <Row size={3}>
-                                    <Col>
-                                        <WeatherComponent weather={this.props.tempActivity.startWeather} />
-                                    </Col>
-                                    <Col>
-                                        {this.state.endWeather == null ? 
-                                            <Spinner style={{...StyleSheet.absoluteFillObject}} color='green' />
-                                        :
-                                            <WeatherComponent weather={this.state.endWeather} />
-                                        }
-                                    </Col>
-                                </Row>
-                            </Grid>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>Distance</Text>
+                                    </Body>
+                                </CardItem>
+                                <CardItem style={Styles.centerItems}>
+                                    <Text style={Styles.bigText}>{this.props.tempActivity.distance.toString() + ' km'}</Text>
+                                </CardItem>
+                            </Card>
                         </Row>
-                        <Row><Text>3</Text></Row>
+                        <Row>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>Pace</Text>
+                                    </Body>
+                                </CardItem>
+                                <CardItem style={Styles.centerItems}>
+                                    <Text style={Styles.bigText}>{ toKmph(this.props.tempActivity.seconds, this.props.tempActivity.distance).toFixed(2).toString() + ' kmph'}</Text>
+                                </CardItem>
+                            </Card>
+                        </Row>
+                        <Row size={1.5}>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>Weather Begin/End</Text>
+                                    </Body>
+                                </CardItem>
+                                <CardItem>
+                                    <Body>
+                                        <Grid style={{flexGrow: 1}} contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}>
+                                            <Col>
+                                                <WeatherComponent weather={this.props.tempActivity.startWeather} />
+                                            </Col>
+                                            <Col>
+                                                {this.state.endWeather == null ?
+                                                    <Spinner style={{ ...StyleSheet.absoluteFillObject }} color='green' />
+                                                    :
+                                                    <WeatherComponent weather={this.state.endWeather} />
+                                                }
+                                            </Col>
+                                        </Grid>
+                                    </Body>
+                                </CardItem>
+                            </Card>
+                        </Row>
                         <Row><Text>4</Text></Row>
-                        <Row><Text>5</Text></Row>
                     </Grid>
                 </Content>
             </Container>
