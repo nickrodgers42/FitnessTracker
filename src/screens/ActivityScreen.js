@@ -106,7 +106,7 @@ class ActivityScreen extends Component {
                 })
                 .catch((error) => { console.error(error); });
         },
-            (error) => { console.error(error); },
+            (error) => { console.log(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         );
         this.locationWatcher = navigator.geolocation.watchPosition(
@@ -127,7 +127,7 @@ class ActivityScreen extends Component {
                     })
                 }
             },
-            (error) => { console.error(error); },
+            (error) => { console.log(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }
         )
         this.willFocusListener = this.props.navigation.addListener(

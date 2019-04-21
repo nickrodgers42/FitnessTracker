@@ -7,7 +7,9 @@ import {
     FlatList,
     Image,
     Dimensions,
-    Alert
+    CameraRoll,
+    Alert,
+    PermissionsAndroid
 } from 'react-native';
 import {
     Body,
@@ -32,6 +34,8 @@ import {
     CardItem,
     Toast
 } from 'native-base';
+
+import { RNCamera } from 'react-native-camera';
 
 import navigationService from '../services/NavigationService';
 import { connect } from "react-redux";
@@ -83,7 +87,10 @@ class AfterActivityScreen extends Component {
         super(props);
         this.state = {
             endWeather: null,
-            activityPath: this.props.tempActivity.path
+            activityPath: this.props.tempActivity.path,
+            frontOrBackCamera: RNCamera.Constants.Type.back,
+            photoUri: null,
+            imageSaved: false,
         }
     }
 
@@ -95,9 +102,12 @@ class AfterActivityScreen extends Component {
                 })
                 .catch((error) => { console.error(error); });
         },
-            (error) => { console.error(error); },
+            (error) => { console.long(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         );
+        if (Platform.OS === 'android') {
+            requestCameraRollPermission();
+        }
     }
 
     getInitialRegion() {
@@ -114,12 +124,54 @@ class AfterActivityScreen extends Component {
         this.setState({region});
     }
 
+    switchCamera() {
+        if (this.state.frontOrBackCamera == RNCamera.Constants.Type.back) {
+            this.setState({
+                frontOrBackCamera: RNCamera.Constants.Type.front
+            })
+        }
+        else {
+            this.setState({
+                frontOrBackCamera: RNCamera.Constants.Type.back
+            })
+        }
+    }
+
+    takePicture() {
+        if (this.camera) {
+            const options = { quality: 0.5, base64: true};
+            this.camera.takePictureAsync(options)
+                .then((result) => {
+                    this.setState({
+                        photoUri: result.uri
+                    })
+                })
+                .catch((error) => console.error(error));
+        }
+    }
+
+    discardImage() {
+        this.setState({
+            photoUri: null
+        })
+    }
+
+    saveImage() {
+        CameraRoll.saveToCameraRoll(this.state.photoUri)
+            .then((result) => {
+                this.setState({
+                    photoUri: result,
+                    imageSaved: true
+                })
+            })
+    }
+
     render() {
         let dim = Dimensions.get('window');
         return (
             <Container>
                 <Content
-                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 2, justifyContent: 'space-between' }}
+                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 2.5, justifyContent: 'space-between' }}
                 >
                     <Grid>
                         <Row size={2}>
@@ -144,6 +196,60 @@ class AfterActivityScreen extends Component {
                                     </MapView>
                                 }
                             </Col> 
+                        </Row>
+                        <Row size={2}>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>Post Workout Selfie</Text>
+                                    </Body>
+                                </CardItem>
+                                {this.state.photoUri == null ? 
+                                    <View style={{ flex: 1, overflow: 'hidden', flexDirection: 'column', backgroundColor: 'black'}}>
+                                        <RNCamera 
+                                            ref={ref => {this.camera = ref;}}
+                                            style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
+                                            type={this.state.frontOrBackCamera}
+                                            flashMode={RNCamera.Constants.FlashMode.auto}
+                                        >
+                                        </RNCamera>
+                                        <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}} >
+                                            <Button onPress={() => {this.takePicture()}} style={{paddingBottom: 20, marginRight: 20}} transparent>
+                                                <Icon name='camera' style={{fontSize: 60, color: 'white'}}></Icon>
+                                            </Button>
+                                            <Button onPress={() => this.switchCamera()} transparent>
+                                                <Icon name='reverse-camera' style={{paddingBottom: 20, fontSize: 40, color: 'white'}} />
+                                            </Button>
+                                        </View>
+                                    </View>
+                                :  
+                                    <View style={{flex: 1, flexDirection: 'column'}}>
+                                        <Image source={{uri: this.state.photoUri}} style={{height: 200, width: null, flex: 1}} />
+                                        {this.state.imageSaved ? 
+                                            null
+                                        :
+                                            <View style={{flex: 0, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                                <Button 
+                                                    danger
+                                                    onPress={() => { this.discardImage() }}
+                                                >
+                                                    <Icon 
+                                                        name='close'
+                                                        style={{fontSize: 40, color: 'white'}} />
+                                                    <Text>Discard</Text>
+                                                </Button>
+                                                <Button 
+                                                    success
+                                                    onPress={() => { this.saveImage() }}
+                                                >
+                                                    <Icon name='checkmark' style={{ fontSize: 40, color: 'white'}} />
+                                                    <Text>Keep</Text>
+                                                </Button>
+                                            </View>
+                                        }                                        
+                                    </View>
+                                }
+                            </Card>
                         </Row>
                         <Row>
                             <Card style={Styles.grow}>
@@ -206,11 +312,27 @@ class AfterActivityScreen extends Component {
                                 </CardItem>
                             </Card>
                         </Row>
-                        <Row><Text>4</Text></Row>
                     </Grid>
                 </Content>
             </Container>
         );
+    }
+}
+
+async function requestCameraRollPermission() {
+    try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+                title: 'Save Photos',
+                message:
+                    'This App needs access to your camera roll to save pictures',
+                buttonNegative: 'Deny',
+                buttonPositive: 'Grant',
+            }
+        );
+    } catch (err) {
+        console.warn(err);
     }
 }
 
