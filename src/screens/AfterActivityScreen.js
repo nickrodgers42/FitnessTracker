@@ -60,6 +60,8 @@ import Styles from '../Stylesheet.js'
 
 import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
 
+import sentimentList from '../models/sentiments';
+
 class AfterActivityScreen extends Component {
     static navigationOptions = ({navigation}) => {
         return {
@@ -91,6 +93,7 @@ class AfterActivityScreen extends Component {
             frontOrBackCamera: RNCamera.Constants.Type.back,
             photoUri: null,
             imageSaved: false,
+            feel: 'sentiment-satisfied'
         }
     }
 
@@ -166,12 +169,18 @@ class AfterActivityScreen extends Component {
             })
     }
 
+    changeFeeling(sentiment) {
+        this.setState({
+            feel: sentiment
+        })
+    }
+
     render() {
         let dim = Dimensions.get('window');
         return (
             <Container>
                 <Content
-                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 2.5, justifyContent: 'space-between' }}
+                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 3, justifyContent: 'space-between' }}
                 >
                     <Grid>
                         <Row size={2}>
@@ -311,6 +320,43 @@ class AfterActivityScreen extends Component {
                                     </Body>
                                 </CardItem>
                             </Card>
+                        </Row>
+                        <Row>
+                            <Card style={Styles.grow}>
+                                <CardItem header bordered>
+                                    <Body>
+                                        <Text style={Styles.titleText}>How do you feel?</Text>
+                                    </Body>
+                                </CardItem>
+                                <CardItem style={{justifyContent: 'space-evenly', alignItems: 'center'}}>
+                                    {sentimentList.map((sentiment) => {
+                                        if (sentiment === this.state.feel) {
+                                            return (
+                                                <TouchableOpacity key={sentiment} style={{borderWidth: 4, borderColor: 'black'}}>
+                                                    <MaterialIcons name={sentiment} style={{padding: 10, fontSize: 60, color: 'black', textAlign: 'center'}} />
+                                                </TouchableOpacity>
+                                            )
+                                        }
+                                        return (
+                                            <TouchableOpacity key={sentiment} onPress={() => {this.changeFeeling(sentiment)}}>
+                                                <MaterialIcons name={sentiment} style={{padding: 10, fontSize: 60, color: 'black', textAlign: 'center'}} />
+                                            </TouchableOpacity>
+                                        )
+                                    })}
+                                </CardItem>
+                            </Card>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <Button full style={{flex: 1}} danger>
+                                    <Icon name='trash' style={{fontSize: 60, textAlign: 'center'}} /> 
+                                </Button>
+                            </Col>
+                            <Col>
+                                <Button full style={{flex: 1}} success>
+                                    <MaterialIcons name='save' size={60} style={{ color: 'white', textAlign: 'center'}} />
+                                </Button>
+                            </Col>
                         </Row>
                     </Grid>
                 </Content>
