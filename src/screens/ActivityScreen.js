@@ -136,6 +136,8 @@ class ActivityScreen extends Component {
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',
             data => {
+                this.stopTimer();
+                this.startTimer();
             }
         )
         this.willBlurListener = this.props.navigation.addListener(
