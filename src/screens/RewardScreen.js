@@ -61,26 +61,56 @@ import {
 
 import Styles from '../Stylesheet.js'
 
-import { formatSeconds, coordDistance, toKmph, formatDate } from '../models/utilFunctions';
+import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
 
 import sentimentList from '../models/sentiments';
 
-export default class ActivitySummary extends Component {
+class ActivityHistory extends Component {
+    static navigationOptions = ({navigation}) => {
+        return {
+            title: 'Rewards Screen'
+        }
+    }
+
     constructor(props) {
         super(props);
+        this.state = {
+
+        }
     }
+
     render() {
         return (
-            <Card>
-                <CardItem header>
-                    <Left>
-                        <Text style={Styles.titleText}>{this.props.activity.type}</Text>
-                    </Left>
-                    <Right>
-                        <Text note>{formatDate(this.props.activity.date)}</Text>
-                    </Right>
-                </CardItem>
-            </Card>
-        )
+            <Container>
+                <Card>
+                    <CardItem header>
+                        <Body>
+                            <Text>Filter Results</Text>
+                        </Body>
+                    </CardItem>
+                    <CardItem>
+                        <Form>
+                            <Item picker>
+                                <Label>Time</Label>
+                                <Picker
+                                    mode="dropdown"
+                                    style={{ width: undefined }}
+                                    placeholder="Select"
+                                >
+                                </Picker>
+                            </Item>
+                        </Form>
+                    </CardItem>
+                </Card>
+            </Container>
+        );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        activities: state.activityList
+    }
+}
+
+export default connect(mapStateToProps)(ActivityHistory);

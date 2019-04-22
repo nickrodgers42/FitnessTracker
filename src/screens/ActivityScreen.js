@@ -53,6 +53,8 @@ import {
 import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
 
 class ActivityScreen extends Component {
+    _isMounted = false;
+
     static navigationOptions = ({navigation}) => {
         return {
             title: 'New ' + navigation.getParam('activity') + ' Activity',
@@ -93,6 +95,7 @@ class ActivityScreen extends Component {
     
     /*** Mounting ***/
     componentDidMount() {
+        this._isMounted = true;
         navigator.geolocation.getCurrentPosition((position) => {
             this.setState({
                 path: [{
@@ -104,14 +107,14 @@ class ActivityScreen extends Component {
                 .then((results) => {
                     this.setState({ startWeather: results.weather });
                 })
-                .catch((error) => { console.error(error); });
+                .catch((error) => { console.log(error); });
         },
             (error) => { console.log(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         );
         this.locationWatcher = navigator.geolocation.watchPosition(
             (position) => {
-                if (this.state.path.length > 0 && !this.state.paused) {
+                if (this.state.path.length > 0 && !this.state.paused && this._isMounted) {
                     this.setState((prevState, props) => {
                         let dist = prevState.distance;
                         let lastLat = prevState.path[prevState.path.length - 1].latitude;
@@ -146,7 +149,7 @@ class ActivityScreen extends Component {
 
     startTimer() {
         this.timer = setInterval(() => {
-            if (!this.state.paused) {
+            if (!this.state.paused && this._isMounted) {
                 this.setState((prevState, props) => {
                     return {
                         seconds: prevState.seconds + 1
@@ -161,7 +164,7 @@ class ActivityScreen extends Component {
     }
 
     componentWillUnmount() {
-        console.log('unmount');
+        this._isMounted = false;
         this.stopTimer();
         this.willBlurListener.remove();
         this.willFocusListener.remove();
@@ -185,6 +188,7 @@ class ActivityScreen extends Component {
             this.state.startWeather
         );
         this.props.dispatchNewTempActivity(activity);
+        this.stopTimer();
         this.props.navigation.push('AfterActivityScreen', {activity: this.props.navigation.getParam('activity')});
     }
 

@@ -29,7 +29,18 @@ export function toKmph(seconds, distance) {
     return (distance * 3600) / seconds;
 }
 
+export function formatDate(date) {
+    let d = new Date(date);
+    let str = '';
+    str += (d.monthIndex + 1) + '/';
+    str += d.day + '/';
+    str += d.getFullYear();
+    return str;
+}
+
 export default {
     formatSeconds,
-    coordDistance
+    coordDistance,
+    toKmph,
+    formatDate,
 }

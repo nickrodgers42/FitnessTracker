@@ -53,7 +53,8 @@ import Activity from '../models/activity';
 import WeatherComponent from '../models/weatherComponent';
 
 import {
-    newTempActivity
+    newTempActivity,
+    saveNewActivity
 } from '../redux/actions/actions';
 
 import Styles from '../Stylesheet.js'
@@ -61,6 +62,17 @@ import Styles from '../Stylesheet.js'
 import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
 
 import sentimentList from '../models/sentiments';
+
+function openAlert() {
+    Alert.alert(
+        'Exit without saving',
+        'You have an activity in progress. Would you like to stop and save your activity before you leave?',
+        [
+            { text: 'Leave', onPress: () => { navigation.navigate('HomeScreen') } },
+            { text: 'Return to activity', onPress: () => { } }
+        ]
+    )
+}
 
 class AfterActivityScreen extends Component {
     static navigationOptions = ({navigation}) => {
@@ -71,14 +83,7 @@ class AfterActivityScreen extends Component {
                             transparent
                             iconLeft
                             onPress={() => {
-                                Alert.alert(
-                                    'Exit without saving',
-                                    'You have an activity in progress. Would you like to stop and save your activity before you leave?',
-                                    [
-                                        { text: 'Leave', onPress: () => { navigation.goBack()} },
-                                        { text: 'Return to activity', onPress: () => { } }
-                                    ]
-                                )
+                                openAlert();
                             }} >
                 <Icon name='arrow-back'/>
             </Button>
@@ -103,7 +108,7 @@ class AfterActivityScreen extends Component {
                 .then((results) => {
                     this.setState({ endWeather: results.weather });
                 })
-                .catch((error) => { console.error(error); });
+                .catch((error) => { console.log(error); });
         },
             (error) => { console.long(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
@@ -111,6 +116,9 @@ class AfterActivityScreen extends Component {
         if (Platform.OS === 'android') {
             requestCameraRollPermission();
         }
+    }
+
+    componentWillUnmount() {
     }
 
     getInitialRegion() {
@@ -149,7 +157,7 @@ class AfterActivityScreen extends Component {
                         photoUri: result.uri
                     })
                 })
-                .catch((error) => console.error(error));
+                .catch((error) => console.log(error));
         }
     }
 
@@ -175,6 +183,17 @@ class AfterActivityScreen extends Component {
         })
     }
 
+    saveActivity() {
+        let ta = this.props.tempActivity;
+        let activity = new Activity(ta.type, ta.seconds, ta.path, ta.distance, ta.startWeather);
+        activity.endWeather = this.state.endWeather;
+        activity.photo = this.state.photoUri;
+        activity.mood = this.state.feel;
+        activity.date = new Date();
+        this.props.saveNewActivity(activity)
+        this.props.navigation.navigate('Home');
+    }
+
     render() {
         let dim = Dimensions.get('window');
         return (
@@ -182,6 +201,7 @@ class AfterActivityScreen extends Component {
                 <Content
                     contentContainerStyle={{ flexGrow: 1, height: dim.height * 3, justifyContent: 'space-between' }}
                 >
+                {this.props.tempActivity == null ? null : 
                     <Grid>
                         <Row size={2}>
                            <Col style={{...StyleSheet.absoluteFillObject}} >
@@ -348,17 +368,32 @@ class AfterActivityScreen extends Component {
                         </Row>
                         <Row>
                             <Col>
-                                <Button full style={{flex: 1}} danger>
+                                <Button 
+                                    full
+                                    style={{flex: 1}} 
+                                    danger
+                                    onPress={() => {
+                                        Alert.alert(
+                                            'Discard Activity',
+                                            'Are you sure you would like to discard this activity?',
+                                            [
+                                                { text: 'Discard', onPress: () => { navigation.navigate('HomeScreen') } },
+                                                { text: 'Return to summary', onPress: () => { } }
+                                            ]
+                                        )
+                                    }}
+                                >
                                     <Icon name='trash' style={{fontSize: 60, textAlign: 'center'}} /> 
                                 </Button>
                             </Col>
                             <Col>
-                                <Button full style={{flex: 1}} success>
+                                <Button onPress={() => {this.saveActivity()}} full style={{flex: 1}} success>
                                     <MaterialIcons name='save' size={60} style={{ color: 'white', textAlign: 'center'}} />
                                 </Button>
                             </Col>
                         </Row>
                     </Grid>
+                }
                 </Content>
             </Container>
         );

@@ -11,6 +11,8 @@ import HomeScreen from '../screens/HomeScreen';
 import ActivitySelectScreen from '../screens/ActivitySelectScreen';
 import ActivityScreen from '../screens/ActivityScreen';
 import AfterActivityScreen from '../screens/AfterActivityScreen';
+import ActivityHistory from '../screens/ActivityHistory';
+import RewardScreen from '../screens/RewardScreen';
 
 let NavigationService = class NavigationService {
     constructor() {
@@ -37,10 +39,11 @@ let NavigationService = class NavigationService {
     }
 }
 
-// const TabOne = createStackNavigator(
-//     {
-//     }
-// )
+const TabOne = createStackNavigator(
+    {
+        History: ActivityHistory,
+    }
+)
 
 const TabTwo = createStackNavigator(
     {
@@ -51,14 +54,17 @@ const TabTwo = createStackNavigator(
     }
 )
 
-// const TabThree = createStackNavigator(
-//     {
-//     }
-// )
+const TabThree = createStackNavigator(
+    {
+        Rewards: RewardScreen
+    }
+)
 
 const Root = createBottomTabNavigator(
     {
+        History: TabOne,
         Home: TabTwo,
+        Rewards: TabThree,
     },
     {
         defaultNavigationOptions: ({ navigation }) => ({
@@ -66,12 +72,12 @@ const Root = createBottomTabNavigator(
                 const { routeName } = navigation.state;
                 let IconComponent = MaterialIcons;
                 let iconName;
-                if (routeName === 'Games') {
-                    iconName = 'videogame-asset';
+                if (routeName === 'History') {
+                    iconName = 'history';
                 } else if (routeName === 'Home') {
                     iconName = 'directions-run';
-                } else if (routeName === 'Favorites') {
-                    iconName = 'star'
+                } else if (routeName === 'Rewards') {
+                    iconName = 'stars'
                 }
 
                 return <IconComponent name={iconName} size={30} color={tintColor} />;

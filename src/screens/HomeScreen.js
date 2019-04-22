@@ -70,9 +70,9 @@ export default class HomeScreen extends Component {
                 .then((results) => {
                     this.setState({weather: results.weather});
                 })
-                .catch((error) => { console.error (error); });
+                .catch((error) => { console.log (error); });
         },
-        (error) => {console.error(error);},
+        (error) => {console.log(error);},
         { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         );
         this.locationWatcher = navigator.geolocation.watchPosition(
@@ -84,7 +84,7 @@ export default class HomeScreen extends Component {
                     }
                 })
             },
-            (error) => { console.error(error); },
+            (error) => { console.log(error); },
             { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }            
         )
         this.willFocusListener = this.props.navigation.addListener(
@@ -96,7 +96,7 @@ export default class HomeScreen extends Component {
                             this.setState({weather: results.weather});
                         })
                         .catch((error) => {
-                            console.error(error);
+                            console.log(error);
                         })
                 }
             }
