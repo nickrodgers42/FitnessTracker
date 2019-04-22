@@ -56,7 +56,8 @@ import Activity from '../models/activity';
 import WeatherComponent from '../models/weatherComponent';
 
 import {
-    newTempActivity
+    newTempActivity,
+    updateActivities
 } from '../redux/actions/actions';
 
 import Styles from '../Stylesheet.js'
@@ -66,6 +67,7 @@ import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
 import sentimentList from '../models/sentiments';
 
 import ActivitySummary from './ActivitySummary';
+import dataController from '../services/datacontroller';
 
 let timeItems = [
     'Time: Any',
@@ -105,6 +107,15 @@ class ActivityHistory extends Component {
     }
 
     componentDidMount() {
+        try {
+            dataController.getActivities()
+                .then((result) => {
+                    this.props.dispatchUpdateActivities(result)
+                })
+                .catch(error => { });
+        } catch (error) {
+            // dataController.setLists
+        }
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',
             data => {
@@ -217,4 +228,9 @@ function mapStateToProps(state) {
     }
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        dispatchUpdateActivities: (val) => dispatch(updateActivities(val))
+    }
+}
 export default connect(mapStateToProps)(ActivityHistory);

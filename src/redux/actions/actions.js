@@ -24,3 +24,10 @@ export function saveNewActivity(val) {
         item: val,
     }
 }
+
+export function updateActivities(val) {
+    return {
+        type: UPDATEACTIVITIES,
+        item: val
+    }
+}

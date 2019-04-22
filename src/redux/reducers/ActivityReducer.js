@@ -1,8 +1,11 @@
 import { 
     SAVEACTIVITY,
     NEWTEMPACTIVITY,
-    SAVENEWACTIVITY
+    SAVENEWACTIVITY,
+    UPDATEACTIVITIES
 } from '../actions/constants';
+
+import dataController from '../../services/dataController';
 
 let initialState = {
     activities: [],
@@ -23,6 +26,10 @@ export default function(state = initialState, action) {
             let temp = state.activities;
             temp.push(action.item);
             return {...state, activities: temp, tempActivity: null}
+        }
+        case UPDATEACTIVITIES: {
+            dataController.setActivities(action.item);
+            return {...state, activities: action.item}
         }
         default:
             return state;
