@@ -59,7 +59,8 @@ import Activity from '../models/activity';
 import WeatherComponent from '../models/weatherComponent';
 
 import {
-    newTempActivity
+    newTempActivity,
+    selectActivity
 } from '../redux/actions/actions';
 
 import Styles from '../Stylesheet.js'
@@ -68,10 +69,16 @@ import { formatSeconds, coordDistance, toKmph, formatDate } from '../models/util
 
 import sentimentList from '../models/sentiments';
 
-export default class ActivitySummary extends Component {
+class ActivitySummary extends Component {
     constructor(props) {
         super(props);
     }
+
+    goToActivityDetail(activity) {
+        this.props.selectActivity(activity);
+        this.props.navigation.push('ActivityDetail', {activity: activity.type});
+    }
+
     render() {
         return (
             <Card>
@@ -79,7 +86,7 @@ export default class ActivitySummary extends Component {
                     bordered 
                     header
                     button
-                    onPress={() => console.log('cardPressed')}
+                    onPress={() => this.goToActivityDetail(this.props.activity)}
                 >
                     <Left>
                         <Text style={Styles.titleText}>{this.props.activity.type}</Text>
@@ -119,3 +126,11 @@ export default class ActivitySummary extends Component {
         )
     }
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        selectActivity: (val) => dispatch(selectActivity(val))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(ActivitySummary);

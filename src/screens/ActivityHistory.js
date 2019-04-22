@@ -112,8 +112,10 @@ class ActivityHistory extends Component {
             dataController.getActivities()
                 .then((result) => {
                     this.props.dispatchUpdateActivities(result)
+                    let acts = [...result];
+                    acts.reverse();
                     this.setState({
-                        activities: result.reverse()
+                        activities: acts
                     })
                 })
                 .catch(error => { console.log(error)});
@@ -123,12 +125,17 @@ class ActivityHistory extends Component {
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',
             data => {
+                let acts = [...this.props.activities]
+                acts.reverse();
                 this.setState({
-                    activities: this.props.activities.reverse()
+                    activities: acts
                 })
-                this.forceUpdate();
             }
         )
+    }
+
+    componentWillUnmount() {
+        this.willFocusListener.remove();
     }
 
     changeTime(value) {
@@ -138,7 +145,8 @@ class ActivityHistory extends Component {
     }
 
     changeSort(value) {
-        let sorted = this.props.activities.reverse();
+        let sorted = [...this.props.activities];
+        sorted.reverse();
         if (value == sortItems[1]) {
             sorted = this.sortByPace(this.props.activities);
         }
@@ -293,7 +301,7 @@ class ActivityHistory extends Component {
                     {this.state.activities.map((activity) => {
                         if (this.filterActivity(activity)) {
                             return (
-                                <ActivitySummary key={activity.date} activity={activity} />
+                                <ActivitySummary navigation={this.props.navigation} key={activity.date} activity={activity} />
                             )
                         }
                         else {

@@ -2,7 +2,9 @@ import {
     SAVEACTIVITY,
     NEWTEMPACTIVITY,
     SAVENEWACTIVITY,
-    UPDATEACTIVITIES
+    UPDATEACTIVITIES,
+    SELECTACTIVITY,
+    DISCARDCURRENTACTIVITY
 } from './constants';
 
 export function saveActivity(val) {
@@ -30,5 +32,18 @@ export function updateActivities(val) {
     return {
         type: UPDATEACTIVITIES,
         item: val
+    }
+}
+
+export function selectActivity(val) {
+    return {
+        type: SELECTACTIVITY,
+        item: val
+    }
+}
+
+export function discardCurrentActivity() {
+    return {
+        type: DISCARDCURRENTACTIVITY
     }
 }

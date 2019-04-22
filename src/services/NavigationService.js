@@ -13,6 +13,7 @@ import ActivityScreen from '../screens/ActivityScreen';
 import AfterActivityScreen from '../screens/AfterActivityScreen';
 import ActivityHistory from '../screens/ActivityHistory';
 import RewardScreen from '../screens/RewardScreen';
+import ActivityDetail from '../screens/ActivityDetail';
 
 let NavigationService = class NavigationService {
     constructor() {
@@ -42,6 +43,7 @@ let NavigationService = class NavigationService {
 const TabOne = createStackNavigator(
     {
         History: ActivityHistory,
+        ActivityDetail: ActivityDetail,
     }
 )
 

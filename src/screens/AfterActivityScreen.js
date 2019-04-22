@@ -192,7 +192,7 @@ class AfterActivityScreen extends Component {
         }
         activity.mood = this.state.feel;
         activity.date = new Date();
-        this.props.saveNewActivity(activity)
+        this.props.saveNewActivity(activity);
         this.props.navigation.navigate('Home');
     }
 
@@ -379,7 +379,7 @@ class AfterActivityScreen extends Component {
                                             'Discard Activity',
                                             'Are you sure you would like to discard this activity?',
                                             [
-                                                { text: 'Discard', onPress: () => { navigation.navigate('HomeScreen') } },
+                                                { text: 'Discard', onPress: () => { this.props.navigation.navigate('HomeScreen') } },
                                                 { text: 'Return to summary', onPress: () => { } }
                                             ]
                                         )

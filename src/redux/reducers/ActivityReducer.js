@@ -2,14 +2,17 @@ import {
     SAVEACTIVITY,
     NEWTEMPACTIVITY,
     SAVENEWACTIVITY,
-    UPDATEACTIVITIES
+    UPDATEACTIVITIES,
+    SELECTACTIVITY,
+    DISCARDCURRENTACTIVITY
 } from '../actions/constants';
 
 import dataController from '../../services/datacontroller';
 
 let initialState = {
     activities: [],
-    tempActivity: null
+    tempActivity: null,
+    selectedActivity: null
 };
 
 export default function(state = initialState, action) {
@@ -31,6 +34,19 @@ export default function(state = initialState, action) {
         case UPDATEACTIVITIES: {
             dataController.setActivities(action.item);
             return {...state, activities: action.item}
+        }
+        case SELECTACTIVITY: {
+            return {...state, selectedActivity: action.item}
+        }
+        case DISCARDCURRENTACTIVITY: {
+            if (state.selectedActivity != null) {
+                let index = state.activities.indexOf(state.selectedActivity);
+                let temp = [...state.activities]
+                temp.splice(index, 1);
+                dataController.setActivities(temp);
+                return {...state, activities: temp, selectedActivity: null}
+            }
+            return state;
         }
         default:
             return state;
