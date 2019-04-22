@@ -38,9 +38,33 @@ export function formatDate(date) {
     return str;
 }
 
+export function consecutiveDays(day1, day2) {
+    var d1 = new Date(day1);
+    var d2 = new Date(day2);
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+    if (Math.abs(d1 - d2) === 86400000) {
+        return true;
+    }
+    return false;
+}
+
+export function sameDay(day1, day2) {
+    var d1 = new Date(day1);
+    var d2 = new Date(day2);
+    d1.setHours(0, 0, 0, 0);
+    d2.setHours(0, 0, 0, 0);
+    if (Math.abs(d1 - d2) < 86400000) {
+        return true;
+    }
+    return false;
+}
+
 export default {
     formatSeconds,
     coordDistance,
     toKmph,
     formatDate,
+    consecutiveDays,
+    sameDay
 }

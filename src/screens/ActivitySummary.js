@@ -103,7 +103,7 @@ class ActivitySummary extends Component {
                         <H3>Distance</H3>
                     </Left>
                     <Right>
-                        <Text>{this.props.activity.distance + ' km'}</Text>
+                        <Text>{this.props.activity.distance.toFixed(2) + ' km'}</Text>
                     </Right>
                 </CardItem>
                 <CardItem>
@@ -119,7 +119,7 @@ class ActivitySummary extends Component {
                         <H3>Pace</H3>
                     </Left>
                     <Right>
-                        <Text>{toKmph(this.props.activity.seconds, this.props.activity.distance) + ' kmph'}</Text>
+                        <Text>{toKmph(this.props.activity.seconds, this.props.activity.distance).toFixed(2) + ' kmph'}</Text>
                     </Right>
                 </CardItem>
             </Card>

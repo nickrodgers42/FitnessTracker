@@ -302,7 +302,7 @@ class AfterActivityScreen extends Component {
                                     </Body>
                                 </CardItem>
                                 <CardItem style={Styles.centerItems}>
-                                    <Text style={Styles.bigText}>{this.props.tempActivity.distance.toString() + ' km'}</Text>
+                                    <Text style={Styles.bigText}>{this.props.tempActivity.distance.toFixed(2).toString() + ' km'}</Text>
                                 </CardItem>
                             </Card>
                         </Row>

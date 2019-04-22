@@ -121,6 +121,7 @@ class ActivityHistory extends Component {
                 .catch(error => { console.log(error)});
         } catch (error) {
             // dataController.setLists
+            console.log(error);
         }
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',

@@ -63,7 +63,7 @@ import {
 
 import Styles from '../Stylesheet.js'
 
-import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
+import { formatSeconds, coordDistance, toKmph, sameDay, consecutiveDays } from '../models/utilFunctions';
 
 import sentimentList from '../models/sentiments';
 
@@ -80,12 +80,78 @@ class ActivityDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            rewards: []
         }
     }
     
     componentDidMount() {
-        
+        this.updateRewards();
+    }
+
+    updateRewards() {
+        let numActivities = this.props.activities.length;
+        let level = Math.floor(numActivities / 5);
+        let toNextLevel = 5 - Math.floor(numActivities % 5);
+        let bestPace = 0;
+        let longestActivity = 0;
+        let greatestDistance = 0;
+        let bestStreak = 1;
+        let currentStreak = 1;
+        let streakActivities = [this.props.activities[0]];
+        let bestStreakActivities = [this.props.activities[0]];
+        this.props.activities.forEach((element) => {
+            let p = toKmph(element.seconds, element.distance);
+            if (p > bestPace) {
+                bestPace = p;
+            }
+            if (element.seconds > longestActivity) {
+                longestActivity = element.seconds;
+            }
+            if (element.distance > greatestDistance) {
+                greatestDistance = element.distance;
+            }
+        });
+        for (let i = 0; i < this.props.activities.length - 1; ++i) {
+            if (sameDay(this.props.activities[i].date, this.props.activities[i + 1].date)) {
+                if (bestStreakActivities.includes(this.props.activities[i])) {
+                    bestStreakActivities.push(this.props.activities[i + 1]);
+                }
+                streakActivities.push(this.props.activities[i + 1]);
+            }
+            else if (consecutiveDays(this.props.activities[i].date, this.props.activities[i + 1].date)) {
+                currentStreak += 1;
+                streakActivities.push(this.props.activities[i + 1]);
+                if (currentStreak > bestStreak) {
+                    bestStreak = currentStreak;
+                    bestStreakActivities = [...streakActivities];
+                }
+            }
+            else {
+                currentStreak = 1;
+                streakActivities = [this.props.activities[i + 1]]
+            }
+        }
+        let rewards = []
+        console.log(streakActivities);
+        console.log(bestStreakActivities);
+        if (streakActivities.includes(this.props.activity)) {
+            rewards.push('Current Streak');
+        }
+        if (bestStreakActivities.includes(this.props.activity)) {
+            rewards.push('Best Streak');
+        }
+        if (longestActivity == this.props.activity.seconds) {
+            rewards.push('Longest Activity')
+        }
+        if (greatestDistance == this.props.activity.distance) {
+            rewards.push('Greatest Distance');
+        }
+        if (bestPace == toKmph(this.props.activity.seconds, this.props.activity.distance)) {
+            rewards.push('Best Pace');
+        }
+        this.setState({
+            rewards: rewards
+        })
     }
 
     getInitialRegion() {
@@ -111,10 +177,14 @@ class ActivityDetail extends Component {
 
     render() {
         let dim = Dimensions.get('window');
+        let heightMul = 3;
+        if (this.state.rewards.length > 0) {
+            heightMul = 3.5;
+        }
         return (
             <Container>
                 <Content
-                    contentContainerStyle={{ flexGrow: 1, height: dim.height * 3, justifyContent: 'space-between'}}
+                    contentContainerStyle={{ flexGrow: 1, height: dim.height * heightMul, justifyContent: 'space-between'}}
                 >
                 {this.props.activity == null ? null :
                     <Grid>
@@ -177,7 +247,7 @@ class ActivityDetail extends Component {
                                     </Body>
                                 </CardItem>
                                 <CardItem style={Styles.centerItems}>
-                                    <Text style={Styles.bigText}>{this.props.activity.distance.toString() + ' km'}</Text>
+                                    <Text style={Styles.bigText}>{this.props.activity.distance.toFixed(2).toString() + ' km'}</Text>
                                 </CardItem>
                             </Card>
                         </Row>
@@ -239,6 +309,27 @@ class ActivityDetail extends Component {
                                 </CardItem>
                             </Card>
                         </Row>
+                        {this.state.rewards.length > 0 ?
+                            <Row size={2}>
+                                <Card style={Styles.grow}>
+                                    <CardItem header>
+                                        <Left>
+                                            <Icon name='star' style={{fontSize: 30, color: 'black'}} />
+                                            <Text style={Styles.titleText}>Rewards</Text>
+                                        </Left>
+                                    </CardItem>
+                                    {this.state.rewards.map((element) => {
+                                        return (
+                                            <CardItem key={element}>
+                                                <Text>{element}</Text>
+                                            </CardItem>
+                                        )
+                                    })}
+                                </Card>
+                            </Row>
+                            :
+                            null
+                        }
                         <Row>
                             <Col>
                                 <Button 
@@ -270,7 +361,8 @@ class ActivityDetail extends Component {
 
 function mapStateToProps(state) {
     return {
-        activity: state.selectedActivity
+        activity: state.selectedActivity,
+        activities: state.activities
     }
 }
 
