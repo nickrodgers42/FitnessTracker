@@ -102,7 +102,8 @@ class ActivityHistory extends Component {
         this.state ={
             timeSelected: timeItems[0],
             sortSelected: sortItems[0],
-            viewSelected: viewItems[0],        
+            viewSelected: viewItems[0],
+            activities: this.props.activities        
         }
     }
 
@@ -111,14 +112,20 @@ class ActivityHistory extends Component {
             dataController.getActivities()
                 .then((result) => {
                     this.props.dispatchUpdateActivities(result)
+                    this.setState({
+                        activities: result.reverse()
+                    })
                 })
-                .catch(error => { });
+                .catch(error => { console.log(error)});
         } catch (error) {
             // dataController.setLists
         }
         this.willFocusListener = this.props.navigation.addListener(
             'willFocus',
             data => {
+                this.setState({
+                    activities: this.props.activities.reverse()
+                })
                 this.forceUpdate();
             }
         )
@@ -131,9 +138,35 @@ class ActivityHistory extends Component {
     }
 
     changeSort(value) {
+        let sorted = this.props.activities.reverse();
+        if (value == sortItems[1]) {
+            sorted = this.sortByPace(this.props.activities);
+        }
+        else if (value == sortItems[2]) {
+            sorted = this.sortByDuration(this.props.activities);
+        }
         this.setState({
-            sortSelected: value
+            sortSelected: value,
+            activities: sorted
         })
+    }
+
+    sortByPace(activities) {
+        let newActivities = [...activities];
+        newActivities.sort(function(act1, act2) {
+            let a = act1.distance / act1.seconds;
+            let b = act2.distance / act2.seconds;
+            return a - b;
+        })
+        return newActivities;
+    }
+    
+    sortByDuration(activities) {
+        let newActivities = [...activities];
+        newActivities.sort(function(act1, act2) {
+            return act2.seconds - act1.seconds;
+        })
+        return newActivities;
     }
 
     changeView(value) {
@@ -150,10 +183,42 @@ class ActivityHistory extends Component {
         })
     }
 
+    filterActivity(activity) {
+        let today = new Date();
+        let activityDate = new Date(activity.date);
+        let diff = today.getTime() - activityDate.getTime();
+        let numDaysBetween = (diff / (1000 * 60 * 60 * 24));        
+        if (this.state.timeSelected == timeItems[3]) {
+            if (numDaysBetween > 365) {
+                return false;
+            }
+        }
+        else if (this.state.timeSelected == timeItems[2]) {
+            if (numDaysBetween > 30) {
+                return false;
+            }
+        }
+        else if (this.state.timeSelected == timeItems[1]) {
+            if (numDaysBetween > 7) {
+                return false;
+            }
+        }
+        let type = activity.type;
+        let index = viewItems.indexOf(this.state.viewSelected);
+        if (index != 0) {
+            let selectedType = activityList[index - 1][0];
+            if (type !== selectedType) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     render() {
         let win = Dimensions.get('window');
         return (
             <Container>
+                <Content>
                 <Card>
                     <CardItem header>
                         <Body>
@@ -212,11 +277,32 @@ class ActivityHistory extends Component {
                         </Button>
                     </CardItem>
                 </Card>
-                {this.props.activities.map((activity) => {
-                    return (
-                        <ActivitySummary key={activity.date} activity={activity} />
-                    )
-                })}
+                {this.state.activities.length == 0 ? 
+                    <Card>
+                        <CardItem header>
+                            <Body>
+                                <Text style={Styles.titleText}>
+                                    You don't have any activities! 
+                                    Head over to the home tab to start your first activity.
+                                </Text>
+                            </Body>
+                        </CardItem>
+                    </Card>
+                : 
+                    <View>
+                    {this.state.activities.map((activity) => {
+                        if (this.filterActivity(activity)) {
+                            return (
+                                <ActivitySummary key={activity.date} activity={activity} />
+                            )
+                        }
+                        else {
+                            return null;
+                        }
+                    })}
+                    </View>
+                }
+                </Content>
             </Container>
         );
     }
@@ -233,4 +319,4 @@ function mapDispatchToProps(dispatch) {
         dispatchUpdateActivities: (val) => dispatch(updateActivities(val))
     }
 }
-export default connect(mapStateToProps)(ActivityHistory);
+export default connect(mapStateToProps, mapDispatchToProps)(ActivityHistory);

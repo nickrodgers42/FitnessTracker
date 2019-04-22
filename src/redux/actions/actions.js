@@ -1,7 +1,8 @@
 import { 
     SAVEACTIVITY,
     NEWTEMPACTIVITY,
-    SAVENEWACTIVITY
+    SAVENEWACTIVITY,
+    UPDATEACTIVITIES
 } from './constants';
 
 export function saveActivity(val) {

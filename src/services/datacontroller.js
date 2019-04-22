@@ -23,7 +23,6 @@ class DataController {
     }
 
     changeItem(value) {
-        console.log("changeItem in data controller: ", value)
         return new Promise((resolve, reject) => {
             localStorage.add('dataList', value)
                 .then(() => {

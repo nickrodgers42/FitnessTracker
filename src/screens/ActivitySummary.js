@@ -35,7 +35,10 @@ import {
     Spinner,
     Card,
     CardItem,
-    Toast
+    Toast,
+    H1, 
+    H2,
+    H3
 } from 'native-base';
 
 import { RNCamera } from 'react-native-camera';
@@ -72,12 +75,44 @@ export default class ActivitySummary extends Component {
     render() {
         return (
             <Card>
-                <CardItem header>
+                <CardItem
+                    bordered 
+                    header
+                    button
+                    onPress={() => console.log('cardPressed')}
+                >
                     <Left>
                         <Text style={Styles.titleText}>{this.props.activity.type}</Text>
                     </Left>
                     <Right>
-                        <Text note>{formatDate(this.props.activity.date)}</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                            <Text note style={{paddingRight: 20}}>{formatDate(this.props.activity.date)}</Text>
+                            <Icon name='arrow-forward' style={{fontSize: 30, color: 'black'}} />
+                        </View>
+                    </Right>
+                </CardItem>
+                <CardItem>
+                    <Left>
+                        <H3>Distance</H3>
+                    </Left>
+                    <Right>
+                        <Text>{this.props.activity.distance + ' km'}</Text>
+                    </Right>
+                </CardItem>
+                <CardItem>
+                    <Left>
+                        <H3>Duration</H3>
+                    </Left>
+                    <Right>
+                        <Text>{formatSeconds(this.props.activity.seconds)}</Text>
+                    </Right>
+                </CardItem>
+                <CardItem>
+                    <Left>
+                        <H3>Pace</H3>
+                    </Left>
+                    <Right>
+                        <Text>{toKmph(this.props.activity.seconds, this.props.activity.distance) + ' kmph'}</Text>
                     </Right>
                 </CardItem>
             </Card>

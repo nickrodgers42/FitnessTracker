@@ -187,7 +187,9 @@ class AfterActivityScreen extends Component {
         let ta = this.props.tempActivity;
         let activity = new Activity(ta.type, ta.seconds, ta.path, ta.distance, ta.startWeather);
         activity.endWeather = this.state.endWeather;
-        activity.photo = this.state.photoUri;
+        if (this.state.imageSaved) {
+            activity.photo = this.state.photoUri;
+        }
         activity.mood = this.state.feel;
         activity.date = new Date();
         this.props.saveNewActivity(activity)

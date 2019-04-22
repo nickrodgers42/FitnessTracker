@@ -4,7 +4,6 @@ class LocalStorage {
     constructor() {
         AsyncStorage.getAllKeys()
             .then(result => {
-                console.log("all keys", result)
             })
             .catch(error => {
 
@@ -31,6 +30,9 @@ class LocalStorage {
 
     merge(key, value) {
         return AsyncStorage.mergeItem(key, JSON.stringify(value));
+    }
+    set(key, value) {
+        return AsyncStorage.setItem(key, JSON.stringify(value));
     }
 };
 
