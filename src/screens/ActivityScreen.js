@@ -50,7 +50,7 @@ import {
     newTempActivity
 } from '../redux/actions/actions';
 
-import { formatSeconds, coordDistance, toKmph } from '../models/utilFunctions';
+import { formatSeconds, coordDistance, toKmph, formatDate } from '../models/utilFunctions';
 
 class ActivityScreen extends Component {
     _isMounted = false;
