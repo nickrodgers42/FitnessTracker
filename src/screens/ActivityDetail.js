@@ -400,27 +400,22 @@ class ActivityDetail extends Component {
                                                     const IMAGE = 'data:image/png;base64,' + data
                                                     let shareImageBase64 = {
                                                         title: 'I just completed a ' + this.props.activity.type + ' Activity',
-                                                        message: 'I spent ' + formatSeconds(this.props.activity.seconds) + ' ' + this.props.activity.type + " on " + d + " and I went " + this.props.activity.distance + " km. Posted from my Fitness Tracker app",
+                                                        message: 'I spent ' + formatSeconds(this.props.activity.seconds) + ' ' + this.props.activity.type + " on " + d + " and I went " + this.props.activity.distance.toFixed(2) + " km. Posted from my Fitness Tracker app",
                                                         url: IMAGE,
                                                         subject: "Share Link" //  for email
                                                     };
-                                                    Share.open(shareImageBase64);
+                                                    Share.open(shareImageBase64)
+                                                        .catch((error) => {console.log(error)});
                                                 })   
                                         }
                                         else {
-                                            let filePath = this.props.activity.photo;
-                                            RNFetchBlob.fs.readFile(filePath, 'base64')
-                                                .then((data) => {
-                                                    // handle the data ..
-                                                    const IMAGE = 'data:image/png;base64,' + data
                                                     let shareImageBase64 = {
                                                         title: 'I just completed a ' + this.props.activity.type + ' Activity',
-                                                        message: 'I spent ' + formatSeconds(this.props.activity.seconds) + ' ' + this.props.activity.type + " on " + d + " and I went " + this.props.activity.distance + " km. Posted from my Fitness Tracker app",
+                                                        message: 'I spent ' + formatSeconds(this.props.activity.seconds) + ' ' + this.props.activity.type + " on " + d + " and I went " + this.props.activity.distance.toFixed(2) + " km. Posted from my Fitness Tracker app",
                                                         url: REACT_ICON,
                                                         subject: "Share Link" //  for email
                                                     };
-                                                    Share.open(shareImageBase64);
-                                                })   
+                                                    Share.open(shareImageBase64);  
                                         }
                                     }}
                                 >
